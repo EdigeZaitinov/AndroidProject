@@ -1,0 +1,2 @@
+rootProject.name='TITC_lab'
+include ':app'

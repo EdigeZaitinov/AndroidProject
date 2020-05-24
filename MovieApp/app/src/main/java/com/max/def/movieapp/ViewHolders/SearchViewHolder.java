@@ -24,7 +24,7 @@ public class SearchViewHolder extends RecyclerView.ViewHolder
         posterImageView = itemView.findViewById(R.id.poster_image_view);
         posterTitle = itemView.findViewById(R.id.poster_title);
 
-        RandomTransitionGenerator generator = new RandomTransitionGenerator(1000, new DecelerateInterpolator());
+        RandomTransitionGenerator generator = new RandomTransitionGenerator(5000, new DecelerateInterpolator());
         posterImageView.setTransitionGenerator(generator);
     }
 

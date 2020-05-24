@@ -35,8 +35,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity
-{
+public class MainActivity extends AppCompatActivity {
     private NiceSpinner sourceSpinner;
 
     private AppCompatEditText queryEditText;
@@ -56,14 +55,9 @@ public class MainActivity extends AppCompatActivity
     private PersonSearchAdapter personSearchAdapter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // disable the keyword on start
-
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         sourceSpinner = findViewById(R.id.source_spinner);
 
@@ -72,7 +66,7 @@ public class MainActivity extends AppCompatActivity
         querySearchButton = findViewById(R.id.query_search_button);
 
         resultsRecyclerView = findViewById(R.id.results_recycler_view);
-        resultsRecyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
+        resultsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         Paper.init(this);
 
@@ -89,119 +83,97 @@ public class MainActivity extends AppCompatActivity
 
         sourceSpinner.attachDataSource(category);
 
-        //retrieve the position at start and the set the spinner
 
-        if (Paper.book().read("position") != null)
-        {
+        if (Paper.book().read("position") != null) {
             int position = Paper.book().read("position");
 
             sourceSpinner.setSelectedIndex(position);
         }
 
-        //set the text on edit text on create
 
         int position = sourceSpinner.getSelectedIndex();
 
-        if (position == 0)
-        {
+        if (position == 0) {
             queryEditText.setHint("Enter any movie title...");
-        }
-        else
-        {
+        } else {
             queryEditText.setHint("Enter any person name...");
         }
 
-        sourceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-        {
+        sourceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
-            {
-                // when sourceSpinner in clicked change the text of  the edit text
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                if (position == 0)
-                {
+                if (position == 0) {
                     queryEditText.setHint("Enter any movie title...");
-                }
-                else
-                {
+                } else {
                     queryEditText.setHint("Enter any person name...");
                 }
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent)
-            {
+            public void onNothingSelected(AdapterView<?> parent) {
 
             }
         });
 
-        //retrieve the results from paper db and start
 
-        if(Paper.book().read("cache") != null)
-        {
+        if (Paper.book().read("cache") != null) {
             String results = Paper.book().read("cache");
 
-            if (Paper.book().read("source") != null)
-            {
+            if (Paper.book().read("source") != null) {
                 String source = Paper.book().read("source");
 
-                if (source.equals("movie"))
-                {
-                    // convert the string cache to model movie response class using gson
+                if (source.equals("movie")) {
 
                     MovieResponse movieResponse = new Gson().fromJson(results, MovieResponse.class);
 
-                    if (movieResponse != null)
-                    {
+                    if (movieResponse != null) {
                         List<MovieResponseResults> movieResponseResults = movieResponse.getResults();
 
-                        movieSearchAdapter = new MovieSearchAdapter(MainActivity.this,movieResponseResults);
+                        movieSearchAdapter = new MovieSearchAdapter(MainActivity.this, movieResponseResults);
 
                         resultsRecyclerView.setAdapter(movieSearchAdapter);
 
                         // create some animation to recycler view item loading
 
-                        LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MainActivity.this,R.anim.layout_slide_right);
+                        LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MainActivity.this, R.anim.layout_slide_right);
 
                         resultsRecyclerView.setLayoutAnimation(controller);
                         resultsRecyclerView.scheduleLayoutAnimation();
 
                         // now store the results in paper database to access offline
 
-                        Paper.book().write("cache",new Gson().toJson(movieResponse));
+                        Paper.book().write("cache", new Gson().toJson(movieResponse));
 
                         // store also the category to set the spinner at app start
 
-                        Paper.book().write("source","movie");
+                        Paper.book().write("source", "movie");
 
                     }
-                }
-                else
-                {
+                } else {
                     PersonResponse personResponse = new Gson().fromJson(results, PersonResponse.class);
 
-                    if (personResponse != null)
-                    {
+                    if (personResponse != null) {
                         List<PersonResponseResults> personResponseResults = personResponse.getResults();
 
-                        personSearchAdapter = new PersonSearchAdapter(MainActivity.this,personResponseResults);
+                        personSearchAdapter = new PersonSearchAdapter(MainActivity.this, personResponseResults);
 
                         resultsRecyclerView.setAdapter(personSearchAdapter);
 
                         // create some animation to recycler view item loading
 
-                        LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MainActivity.this,R.anim.layout_slide_right);
+                        LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MainActivity.this, R.anim.layout_slide_right);
 
                         resultsRecyclerView.setLayoutAnimation(controller);
                         resultsRecyclerView.scheduleLayoutAnimation();
 
                         // now store the results in paper database to access offline
 
-                        Paper.book().write("cache",new Gson().toJson(personResponse));
+                        Paper.book().write("cache", new Gson().toJson(personResponse));
 
                         // store also the category to set the spinner at app start
 
-                        Paper.book().write("source","person");
+                        Paper.book().write("source", "person");
 
                     }
                 }
@@ -211,115 +183,83 @@ public class MainActivity extends AppCompatActivity
 
         //get the query from user
 
-        querySearchButton.setOnClickListener(new View.OnClickListener()
-        {
+        querySearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
-                if (queryEditText.getText() != null)
-                {
+            public void onClick(View v) {
+                if (queryEditText.getText() != null) {
                     String query = queryEditText.getText().toString();
 
-                    if (query.equals("") || query.equals(" "))
-                    {
+                    if (query.equals("") || query.equals(" ")) {
                         Toast.makeText(MainActivity.this, "Please enter any text...", Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                    {
+                    } else {
                         queryEditText.setText("");
-
-                        //get the category to search the query.    movie or person
-
-                        String finalQuery = query.replaceAll(" ","+");
-
-                        if (category.size() > 0)
-                        {
+                        String finalQuery = query.replaceAll(" ", "+");
+                        if (category.size() > 0) {
                             String categoryName = category.get(sourceSpinner.getSelectedIndex());
 
-                            if (categoryName.equals(movie))
-                            {
-                                Call<MovieResponse> movieResponseCall = retrofitService.getMoviesByQuery(BuildConfig.THE_MOVIE_DB_API_KEY,finalQuery);
+                            if (categoryName.equals(movie)) {
+                                Call<MovieResponse> movieResponseCall = retrofitService.getMoviesByQuery(BuildConfig.THE_MOVIE_DB_API_KEY, finalQuery);
 
-                                movieResponseCall.enqueue(new Callback<MovieResponse>()
-                                {
+                                movieResponseCall.enqueue(new Callback<MovieResponse>() {
                                     @Override
-                                    public void onResponse(@NonNull Call<MovieResponse> call,@NonNull Response<MovieResponse> response)
-                                    {
+                                    public void onResponse(@NonNull Call<MovieResponse> call, @NonNull Response<MovieResponse> response) {
                                         MovieResponse movieResponse = response.body();
 
-                                        if (movieResponse != null)
-                                        {
+                                        if (movieResponse != null) {
                                             List<MovieResponseResults> movieResponseResults = movieResponse.getResults();
 
-                                            movieSearchAdapter = new MovieSearchAdapter(MainActivity.this,movieResponseResults);
+                                            movieSearchAdapter = new MovieSearchAdapter(MainActivity.this, movieResponseResults);
 
                                             resultsRecyclerView.setAdapter(movieSearchAdapter);
-
-                                            // create some animation to recycler view item loading
-
-                                            LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MainActivity.this,R.anim.layout_slide_right);
-
+                                            LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MainActivity.this, R.anim.layout_slide_right);
                                             resultsRecyclerView.setLayoutAnimation(controller);
                                             resultsRecyclerView.scheduleLayoutAnimation();
-
-                                            // now store the results in paper database to access offline
-
-                                            Paper.book().write("cache",new Gson().toJson(movieResponse));
-
-                                            // store also the category to set the spinner at app start
-
-                                            Paper.book().write("source","movie");
+                                            Paper.book().write("cache", new Gson().toJson(movieResponse));
+                                            Paper.book().write("source", "movie");
 
                                         }
                                     }
 
                                     @Override
-                                    public void onFailure(@NonNull Call<MovieResponse> call,@NonNull Throwable t)
-                                    {
+                                    public void onFailure(@NonNull Call<MovieResponse> call, @NonNull Throwable t) {
                                         Toast.makeText(MainActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 });
-                            }
-                            else
-                            {
-                                Call<PersonResponse> personResponseCall = retrofitService.getPersonsByQuery(BuildConfig.THE_MOVIE_DB_API_KEY,finalQuery);
+                            } else {
+                                Call<PersonResponse> personResponseCall = retrofitService.getPersonsByQuery(BuildConfig.THE_MOVIE_DB_API_KEY, finalQuery);
 
-                                personResponseCall.enqueue(new Callback<PersonResponse>()
-                                {
+                                personResponseCall.enqueue(new Callback<PersonResponse>() {
                                     @Override
-                                    public void onResponse(@NonNull Call<PersonResponse> call, @NonNull Response<PersonResponse> response)
-                                    {
+                                    public void onResponse(@NonNull Call<PersonResponse> call, @NonNull Response<PersonResponse> response) {
                                         PersonResponse personResponse = response.body();
 
-                                        if (personResponse != null)
-                                        {
+                                        if (personResponse != null) {
                                             List<PersonResponseResults> personResponseResults = personResponse.getResults();
 
-                                            personSearchAdapter = new PersonSearchAdapter(MainActivity.this,personResponseResults);
+                                            personSearchAdapter = new PersonSearchAdapter(MainActivity.this, personResponseResults);
 
                                             resultsRecyclerView.setAdapter(personSearchAdapter);
 
                                             // create some animation to recycler view item loading
 
-                                            LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MainActivity.this,R.anim.layout_slide_right);
+                                            LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(MainActivity.this, R.anim.layout_slide_right);
 
                                             resultsRecyclerView.setLayoutAnimation(controller);
                                             resultsRecyclerView.scheduleLayoutAnimation();
 
                                             // now store the results in paper database to access offline
 
-                                            Paper.book().write("cache",new Gson().toJson(personResponse));
+                                            Paper.book().write("cache", new Gson().toJson(personResponse));
 
                                             // store also the category to set the spinner at app start
 
-                                            Paper.book().write("source","person");
+                                            Paper.book().write("source", "person");
 
                                         }
                                     }
 
                                     @Override
-                                    public void onFailure(@NonNull Call<PersonResponse> call,@NonNull  Throwable t)
-                                    {
+                                    public void onFailure(@NonNull Call<PersonResponse> call, @NonNull Throwable t) {
                                         Toast.makeText(MainActivity.this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                                     }
                                 });
@@ -334,13 +274,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onStop()
-    {
+    protected void onStop() {
         super.onStop();
 
         //set the position of spinner in offline to retrieve at start
 
-        Paper.book().write("position",sourceSpinner.getSelectedIndex());
+        Paper.book().write("position", sourceSpinner.getSelectedIndex());
     }
 }
 

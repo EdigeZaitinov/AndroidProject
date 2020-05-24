@@ -56,7 +56,6 @@
         android:layout_width="match_parent"
         android:layout_height="4dp"
         android:layout_below="@id/main_toolbar"
-        android:background="@drawable/tool_bar_shadow"
         />
 
     <org.angmarch.views.NiceSpinner
@@ -64,7 +63,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tool_bar_shadow"
-        android:background="@drawable/spinner_border"
         app:textTint="#000"
         android:padding="20dp"
         />
@@ -89,7 +87,6 @@
             android:hint="Enter title..."
             android:textColor="#000000"
             android:textColorHint="#393939"
-            android:background="@drawable/edit_text_background"
             />
 
         <android.support.v7.widget.AppCompatButton
